@@ -4,16 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Travel Itinerary Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     :root {
-      --text: #0f172a;
-      --text-light: #64748b;
+      --text: #222222;
+      --text-light: #717171;
       --accent: #059669;
       --accent-hover: #047857;
       --bg: #ffffff;
-      --border: #e5e7eb;
+      --border: #dddddd;
+      --hover-bg: #f7f7f7;
     }
     
     * {
@@ -26,106 +27,208 @@
       padding: 0;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
     
-    .container {
-      max-width: 600px;
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .header-content {
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 48px 24px;
+      padding: 0 24px;
     }
     
-    header {
-      text-align: center;
-      margin-bottom: 48px;
-    }
-    
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      margin: 0 0 12px;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-    
-    .subtitle {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      margin: 0;
-    }
-    
-    .form-group {
-      margin-bottom: 24px;
-    }
-    
-    label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-    
-    input, select {
-      width: 100%;
-      padding: 12px 16px;
-      font-size: 1rem;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      transition: border-color 0.2s;
-    }
-    
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    
-    .checkbox-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-    
-    .checkbox-item {
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
       display: flex;
       align-items: center;
       gap: 8px;
     }
     
-    .checkbox-item input[type="checkbox"] {
-      width: auto;
-      margin: 0;
+    .hero {
+      background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+      padding: 48px 24px;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
     }
     
-    .checkbox-item label {
-      margin: 0;
-      font-weight: 400;
-      cursor: pointer;
-    }
-    
-    button {
+    .hero-content {
+      max-width: 1280px;
+      margin: 0 auto;
       width: 100%;
-      padding: 16px;
-      font-size: 1.1rem;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+      letter-spacing: -0.03em;
+      text-align: center;
+    }
+    
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-light);
+      margin: 0 0 48px;
+      text-align: center;
+    }
+    
+    .search-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .form-field {
+      position: relative;
+    }
+    
+    .form-field label {
+      display: block;
+      font-size: 0.75rem;
       font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    
+    .form-field input,
+    .form-field select {
+      border: 1px solid var(--border);
+      outline: none;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      background: white;
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: border-color 0.2s;
+    }
+    
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: var(--accent);
+    }
+    
+    .form-field select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23717171' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+    }
+    
+    .form-field input::placeholder {
+      color: var(--text-light);
+    }
+    
+    .interests-section {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .interests-section h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin: 0 0 16px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    
+    .budget-options,
+    .trip-type-options {
+      display: none;
+    }
+    
+    .interests-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      font-weight: 500;
+      user-select: none;
+    }
+    
+    .chip:hover {
+      border-color: var(--accent);
+      background: #f0fdf4;
+    }
+    
+    .chip.selected {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+    
+    .chip input[type="checkbox"] {
+      display: none;
+    }
+    
+    .chip-icon {
+      font-size: 18px;
+    }
+    
+    .search-button {
+      width: 100%;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 8px;
+      padding: 16px;
+      font-weight: 600;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
       font-family: 'Inter', sans-serif;
     }
     
-    button:hover {
+    .search-button:hover {
       background: var(--accent-hover);
-    }
-    
-    button:disabled {
-      background: var(--text-light);
-      cursor: not-allowed;
+      transform: scale(1.02);
     }
     
     .loading {
@@ -166,44 +269,66 @@
       padding: 48px 24px;
       color: white;
       text-align: center;
-      margin: -48px -24px 48px;
     }
     
     .itinerary-header h1 {
       color: white;
       margin: 0 0 8px;
+      font-size: 2.5rem;
     }
     
     .itinerary-header p {
       margin: 0;
       opacity: 0.95;
+      font-size: 1.1rem;
     }
     
     .actions {
       display: flex;
       gap: 12px;
-      margin-bottom: 48px;
+      margin: 32px auto;
+      max-width: 1100px;
       padding: 0 24px;
     }
     
     .actions button {
       flex: 1;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent-hover);
     }
     
     .btn-secondary {
       background: white;
-      color: var(--accent);
-      border: 2px solid var(--accent);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
     
     .btn-secondary:hover {
-      background: #f0fdf4;
+      background: var(--hover-bg);
     }
     
     .day {
       margin-bottom: 64px;
       padding: 0 24px 48px;
       border-bottom: 1px solid var(--border);
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     .day:last-child {
@@ -268,12 +393,30 @@
       border: 2px solid #fca5a5;
       color: #991b1b;
       padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 24px;
+      border-radius: 12px;
+      margin: 24px auto;
+      max-width: 1100px;
+      display: none;
+    }
+    
+    @media (max-width: 1024px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
     }
     
     @media print {
-      .actions {
+      .header, .hero, .actions {
         display: none;
       }
       .itinerary-header {
@@ -286,78 +429,98 @@
   </style>
 </head>
 <body>
-  <div class="container" id="formContainer">
-    <header>
-      <h1>Travel Itinerary Generator</h1>
-      <p class="subtitle">Get your custom itinerary in 60 seconds</p>
-    </header>
-    
-    <div id="errorMessage" class="error" style="display: none;"></div>
-    
-    <form id="itineraryForm">
-      <div class="form-group">
-        <label for="destination">Destination</label>
-        <input type="text" id="destination" name="destination" placeholder="e.g., Vietnam, Japan, Thailand" required>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span class="material-icons">explore</span>
+        Traviti
       </div>
-      
-      <div class="form-group">
-        <label for="days">Number of Days</label>
-        <input type="number" id="days" name="days" min="1" max="30" placeholder="5" required>
+    </div>
+  </div>
+
+  <div id="mainView">
+    <div class="hero">
+      <div class="hero-content">
+        <h1>Plan your perfect trip</h1>
+        <p>Get a custom travel itinerary in seconds</p>
+        
+        <form id="itineraryForm" class="search-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="destination">Destination</label>
+              <input type="text" id="destination" name="destination" placeholder="Where to?" required tabindex="1">
+            </div>
+            
+            <div class="form-field">
+              <label for="days">Days</label>
+              <input type="number" id="days" name="days" min="1" max="30" placeholder="How long?" required tabindex="2">
+            </div>
+            
+            <div class="form-field">
+              <label for="budget">Budget</label>
+              <select id="budget" name="budget" required tabindex="3">
+                <option value="">Select budget</option>
+                <option value="budget">💰 Budget</option>
+                <option value="mid-range">🏨 Mid-range</option>
+                <option value="luxury">✨ Luxury</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label for="tripType">Trip Type</label>
+              <select id="tripType" name="tripType" required tabindex="4">
+                <option value="">Who's going?</option>
+                <option value="solo">🎒 Solo Travel</option>
+                <option value="couple">💑 Couple</option>
+                <option value="family">👨‍👩‍👧‍👦 Family</option>
+                <option value="friends">🎉 Friends Group</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="interests-section">
+            <h3>Interests (Optional)</h3>
+            <div class="interests-chips">
+              <label class="chip">
+                <input type="checkbox" name="interests" value="culture">
+                <span class="chip-icon">🏛️</span>
+                <span>Culture</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="interests" value="adventure">
+                <span class="chip-icon">🏔️</span>
+                <span>Adventure</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="interests" value="food">
+                <span class="chip-icon">🍜</span>
+                <span>Food</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="interests" value="relaxation">
+                <span class="chip-icon">🌴</span>
+                <span>Relaxation</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="interests" value="nature">
+                <span class="chip-icon">🌿</span>
+                <span>Nature</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" name="interests" value="nightlife">
+                <span class="chip-icon">🎭</span>
+                <span>Nightlife</span>
+              </label>
+            </div>
+          </div>
+          
+          <button type="submit" class="search-button" tabindex="5">
+            <span class="material-icons">explore</span>
+            Create Itinerary
+          </button>
+        </form>
       </div>
-      
-      <div class="form-group">
-        <label for="budget">Budget</label>
-        <select id="budget" name="budget" required>
-          <option value="">Select budget level</option>
-          <option value="budget">Budget (Hostels, street food, public transport)</option>
-          <option value="mid-range">Mid-range (3-4★ hotels, mix of restaurants)</option>
-          <option value="luxury">Luxury (5★ hotels, fine dining, private transport)</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="tripType">Trip Type</label>
-        <select id="tripType" name="tripType" required>
-          <option value="">Select trip type</option>
-          <option value="solo">Solo Travel</option>
-          <option value="couple">Couple</option>
-          <option value="family">Family with Kids</option>
-          <option value="friends">Friends Group</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Interests (optional)</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item">
-            <input type="checkbox" id="culture" name="interests" value="culture">
-            <label for="culture">Culture</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="adventure" name="interests" value="adventure">
-            <label for="adventure">Adventure</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="food" name="interests" value="food">
-            <label for="food">Food</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="relaxation" name="interests" value="relaxation">
-            <label for="relaxation">Relaxation</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="nature" name="interests" value="nature">
-            <label for="nature">Nature</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="nightlife" name="interests" value="nightlife">
-            <label for="nightlife">Nightlife</label>
-          </div>
-        </div>
-      </div>
-      
-      <button type="submit">Create My Itinerary</button>
-    </form>
+    </div>
   </div>
   
   <div class="loading" id="loading">
@@ -372,34 +535,48 @@
     </div>
     
     <div class="actions">
-      <button onclick="window.print()" class="btn-secondary">Print Itinerary</button>
-      <button onclick="startOver()">Create Another</button>
+      <button onclick="window.print()" class="btn-secondary">
+        <span class="material-icons" style="font-size: 18px; vertical-align: middle;">print</span>
+        Print
+      </button>
+      <button onclick="startOver()" class="btn-primary">Create Another</button>
     </div>
     
     <div id="itineraryContent"></div>
   </div>
+  
+  <div id="errorMessage" class="error"></div>
 
   <script>
+    // Chip selection
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+      });
+    });
+    
+    // Form submission
     document.getElementById('itineraryForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Hide any previous errors
       document.getElementById('errorMessage').style.display = 'none';
       
-      // Get form data
       const formData = new FormData(e.target);
       const destination = formData.get('destination');
       const days = parseInt(formData.get('days'));
       const budget = formData.get('budget');
       const tripType = formData.get('tripType');
-      const interests = formData.getAll('interests');
+      const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(el => el.value);
       
-      // Show loading
-      document.getElementById('formContainer').style.display = 'none';
+      if (!budget || !tripType) {
+        showError('Please select both budget and trip type');
+        return;
+      }
+      
+      document.getElementById('mainView').style.display = 'none';
       document.getElementById('loading').classList.add('active');
       
       try {
-        // Call our Netlify function
         const itinerary = await generateItinerary({
           destination,
           days,
@@ -408,13 +585,12 @@
           interests
         });
         
-        // Display itinerary
         displayItinerary(itinerary, destination, days, budget, tripType);
         
       } catch (error) {
         console.error('Error:', error);
         showError(error.message || 'Sorry, there was an error generating your itinerary. Please try again.');
-        document.getElementById('formContainer').style.display = 'block';
+        document.getElementById('mainView').style.display = 'block';
         document.getElementById('loading').classList.remove('active');
       }
     });
@@ -487,12 +663,16 @@
       const errorDiv = document.getElementById('errorMessage');
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
     }
     
     function startOver() {
       document.getElementById('itineraryContainer').classList.remove('active');
-      document.getElementById('formContainer').style.display = 'block';
+      document.getElementById('mainView').style.display = 'block';
       document.getElementById('itineraryForm').reset();
+      document.querySelectorAll('.chip.selected').forEach(chip => chip.classList.remove('selected'));
       window.scrollTo(0, 0);
     }
   </script>

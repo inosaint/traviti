@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
   try {
     const { destination, days, budget, tripType, interests } = JSON.parse(event.body);
 
-    // Validate input
+    // Validate and sanitize input
     if (!destination || !days || !budget || !tripType) {
       return {
         statusCode: 400,
@@ -20,10 +20,41 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Sanitize destination - allow natural language but prevent injection
+    const sanitizedDestination = destination
+      .trim()
+      .replace(/[<>{}[\]\\]/g, '') // Remove only potentially harmful characters
+      .substring(0, 200); // Limit length
+
+    if (!sanitizedDestination || sanitizedDestination.length < 2) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid destination name' })
+      };
+    }
+
     if (days < 1 || days > 30) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Days must be between 1 and 30' })
+      };
+    }
+    
+    // Validate budget and tripType are from expected values
+    const validBudgets = ['budget', 'mid-range', 'luxury'];
+    const validTripTypes = ['solo', 'couple', 'family', 'friends'];
+    
+    if (!validBudgets.includes(budget)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid budget selection' })
+      };
+    }
+    
+    if (!validTripTypes.includes(tripType)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid trip type selection' })
       };
     }
 
@@ -45,38 +76,23 @@ exports.handler = async (event, context) => {
       ? `Focus on these interests: ${interests.join(', ')}.`
       : '';
 
-    const prompt = `Create a detailed ${days}-day travel itinerary for ${destination}. 
+    const prompt = `Create a ${days}-day travel itinerary for ${sanitizedDestination}. 
 
-Trip details:
-- Budget: ${budgetDescription[budget]}
-- Traveler type: ${tripTypeDescription[tripType]}
-${interestsText}
+Trip: ${budgetDescription[budget]}, ${tripTypeDescription[tripType]}. ${interestsText}
 
-For each day, provide:
-1. A descriptive title (e.g., "Day 1 - Arrival & City Exploration")
-2. Hotel recommendation matching the budget level (include star rating)
-3. A schedule table with three columns: When (Morning/Afternoon/Evening), What (activity), Notes (practical tips)
-4. 3-5 activities per day, balanced and realistic
-
-Format the response as a JSON array of day objects with this structure:
+Return ONLY a JSON array (no markdown, no explanations):
 [
   {
     "day": 1,
-    "title": "Day 1 - Arrival & City Exploration",
+    "title": "Day 1 - Brief Title",
     "hotel": "Hotel Name (3★)",
     "activities": [
-      {
-        "when": "Morning",
-        "what": "Activity description",
-        "notes": "Practical tips"
-      }
+      {"when": "Morning", "what": "Activity", "notes": "Brief tip"}
     ]
   }
 ]
 
-IMPORTANT: Return ONLY the JSON array, with no markdown formatting, no code blocks, no explanatory text. Just the raw JSON array.
-
-Make sure the itinerary is realistic, culturally appropriate, and includes a mix of must-see attractions and authentic local experiences. Consider travel time between locations and don't overpack the schedule.`;
+Keep it concise: 3-4 activities per day, short descriptions.`;
 
     // Try to get the API key
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -98,8 +114,8 @@ Make sure the itinerary is realistic, culturally appropriate, and includes a mix
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5', // Alias - automatically points to latest snapshot
-        max_tokens: 4096,
+        model: 'claude-haiku-4-5', // Much faster than Sonnet, still great quality
+        max_tokens: 2048, // Reduced from 4096 for faster generation
         messages: [
           {
             role: 'user',
