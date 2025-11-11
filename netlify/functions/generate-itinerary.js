@@ -78,17 +78,28 @@ IMPORTANT: Return ONLY the JSON array, with no markdown formatting, no code bloc
 
 Make sure the itinerary is realistic, culturally appropriate, and includes a mix of must-see attractions and authentic local experiences. Consider travel time between locations and don't overpack the schedule.`;
 
-    // Call Anthropic API
+    // Try to get the API key
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY not found in environment');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'API key not configured' })
+      };
+    }
+
+    // Call Anthropic API - using claude-sonnet-4-5-20250929
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        model: 'claude-sonnet-4-5', // Alias - automatically points to latest snapshot
+        max_tokens: 4096,
         messages: [
           {
             role: 'user',
@@ -101,9 +112,14 @@ Make sure the itinerary is realistic, culturally appropriate, and includes a mix
     if (!response.ok) {
       const error = await response.json();
       console.error('Anthropic API error:', error);
+      
+      // Return more specific error message
       return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to generate itinerary' })
+        statusCode: response.status,
+        body: JSON.stringify({ 
+          error: error.error?.message || 'Failed to generate itinerary',
+          details: error
+        })
       };
     }
 
