@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Itinerary Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --text: #0f172a;
+      --text-light: #64748b;
+      --accent: #059669;
+      --accent-hover: #047857;
+      --bg: #ffffff;
+      --border: #e5e7eb;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      margin: 0;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+    
+    .checkbox-item label {
+      margin: 0;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    
+    button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    button:hover {
+      background: var(--accent-hover);
+    }
+    
+    button:disabled {
+      background: var(--text-light);
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 48px;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .itinerary-container {
+      display: none;
+    }
+    
+    .itinerary-container.active {
+      display: block;
+    }
+    
+    .itinerary-header {
+      background: var(--accent);
+      padding: 48px 24px;
+      color: white;
+      text-align: center;
+      margin: -48px -24px 48px;
+    }
+    
+    .itinerary-header h1 {
+      color: white;
+      margin: 0 0 8px;
+    }
+    
+    .itinerary-header p {
+      margin: 0;
+      opacity: 0.95;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 48px;
+      padding: 0 24px;
+    }
+    
+    .actions button {
+      flex: 1;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+    
+    .btn-secondary:hover {
+      background: #f0fdf4;
+    }
+    
+    .day {
+      margin-bottom: 64px;
+      padding: 0 24px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .day:last-child {
+      border-bottom: none;
+    }
+    
+    .day h2 {
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin: 0 0 16px;
+      letter-spacing: -0.01em;
+    }
+    
+    .day > p {
+      margin: 0 0 24px;
+      font-size: 0.95rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .material-icons {
+      font-size: 18px;
+      color: var(--accent);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.9rem;
+      border: none;
+    }
+    
+    th {
+      font-weight: 600;
+      background: var(--bg);
+      color: var(--text);
+      border-bottom: 2px solid var(--text);
+    }
+    
+    tbody tr:nth-child(odd) td {
+      background: #f9fafb;
+    }
+    
+    tbody tr:nth-child(even) td {
+      background: var(--bg);
+    }
+    
+    td:first-child {
+      font-weight: 500;
+    }
+    
+    .error {
+      background: #fef2f2;
+      border: 2px solid #fca5a5;
+      color: #991b1b;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    
+    @media print {
+      .actions {
+        display: none;
+      }
+      .itinerary-header {
+        margin: 0 0 48px;
+      }
+      .day {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="formContainer">
+    <header>
+      <h1>Travel Itinerary Generator</h1>
+      <p class="subtitle">Get your custom itinerary in 60 seconds</p>
+    </header>
+    
+    <div id="errorMessage" class="error" style="display: none;"></div>
+    
+    <form id="itineraryForm">
+      <div class="form-group">
+        <label for="destination">Destination</label>
+        <input type="text" id="destination" name="destination" placeholder="e.g., Vietnam, Japan, Thailand" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="days">Number of Days</label>
+        <input type="number" id="days" name="days" min="1" max="30" placeholder="5" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="budget">Budget</label>
+        <select id="budget" name="budget" required>
+          <option value="">Select budget level</option>
+          <option value="budget">Budget (Hostels, street food, public transport)</option>
+          <option value="mid-range">Mid-range (3-4★ hotels, mix of restaurants)</option>
+          <option value="luxury">Luxury (5★ hotels, fine dining, private transport)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="tripType">Trip Type</label>
+        <select id="tripType" name="tripType" required>
+          <option value="">Select trip type</option>
+          <option value="solo">Solo Travel</option>
+          <option value="couple">Couple</option>
+          <option value="family">Family with Kids</option>
+          <option value="friends">Friends Group</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Interests (optional)</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="culture" name="interests" value="culture">
+            <label for="culture">Culture</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="adventure" name="interests" value="adventure">
+            <label for="adventure">Adventure</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="food" name="interests" value="food">
+            <label for="food">Food</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="relaxation" name="interests" value="relaxation">
+            <label for="relaxation">Relaxation</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="nature" name="interests" value="nature">
+            <label for="nature">Nature</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="nightlife" name="interests" value="nightlife">
+            <label for="nightlife">Nightlife</label>
+          </div>
+        </div>
+      </div>
+      
+      <button type="submit">Create My Itinerary</button>
+    </form>
+  </div>
+  
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Crafting your perfect itinerary...</p>
+  </div>
+  
+  <div class="itinerary-container" id="itineraryContainer">
+    <div class="itinerary-header">
+      <h1 id="itineraryTitle">Your Custom Itinerary</h1>
+      <p id="itinerarySubtitle"></p>
+    </div>
+    
+    <div class="actions">
+      <button onclick="window.print()" class="btn-secondary">Print Itinerary</button>
+      <button onclick="startOver()">Create Another</button>
+    </div>
+    
+    <div id="itineraryContent"></div>
+  </div>
+
+  <script>
+    document.getElementById('itineraryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Hide any previous errors
+      document.getElementById('errorMessage').style.display = 'none';
+      
+      // Get form data
+      const formData = new FormData(e.target);
+      const destination = formData.get('destination');
+      const days = parseInt(formData.get('days'));
+      const budget = formData.get('budget');
+      const tripType = formData.get('tripType');
+      const interests = formData.getAll('interests');
+      
+      // Show loading
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('loading').classList.add('active');
+      
+      try {
+        // Call our Netlify function
+        const itinerary = await generateItinerary({
+          destination,
+          days,
+          budget,
+          tripType,
+          interests
+        });
+        
+        // Display itinerary
+        displayItinerary(itinerary, destination, days, budget, tripType);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showError(error.message || 'Sorry, there was an error generating your itinerary. Please try again.');
+        document.getElementById('formContainer').style.display = 'block';
+        document.getElementById('loading').classList.remove('active');
+      }
+    });
+    
+    async function generateItinerary(params) {
+      const { destination, days, budget, tripType, interests } = params;
+      
+      const response = await fetch('/.netlify/functions/generate-itinerary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          destination,
+          days,
+          budget,
+          tripType,
+          interests
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate itinerary');
+      }
+      
+      const data = await response.json();
+      return data.itinerary;
+    }
+    
+    function displayItinerary(itinerary, destination, days, budget, tripType) {
+      // Update header
+      document.getElementById('itineraryTitle').textContent = `${destination} in ${days} Days`;
+      document.getElementById('itinerarySubtitle').textContent = `${budget.charAt(0).toUpperCase() + budget.slice(1)} • ${tripType.charAt(0).toUpperCase() + tripType.slice(1)}`;
+      
+      // Generate itinerary HTML
+      const content = itinerary.map(day => `
+        <div class="day">
+          <h2>${day.title}</h2>
+          <p><span class="material-icons">hotel</span>Hotel: ${day.hotel}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>What</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${day.activities.map(activity => `
+                <tr>
+                  <td>${activity.when}</td>
+                  <td>${activity.what}</td>
+                  <td>${activity.notes}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `).join('');
+      
+      document.getElementById('itineraryContent').innerHTML = content;
+      
+      // Show itinerary
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('itineraryContainer').classList.add('active');
+    }
+    
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+    
+    function startOver() {
+      document.getElementById('itineraryContainer').classList.remove('active');
+      document.getElementById('formContainer').style.display = 'block';
+      document.getElementById('itineraryForm').reset();
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>
