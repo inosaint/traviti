@@ -527,6 +527,15 @@
       td:first-child {
         width: 50px;
       }
+      
+      th:first-child {
+        font-size: 0;
+      }
+      
+      th:first-child::after {
+        content: "🕐";
+        font-size: 0.9rem;
+      }
     }
     
     @media (max-width: 768px) {
@@ -904,11 +913,18 @@
       const timeIcons = {
         'Morning': { icon: '🌅', alt: 'Morning' },
         'Afternoon': { icon: '☀️', alt: 'Afternoon' },
-        'Evening': { icon: '🌆', alt: 'Evening' },
+        'Late Afternoon': { icon: '🌇', alt: 'Late Afternoon' },
+        'Evening': { icon: '🌃', alt: 'Evening' },
+        'Dinner': { icon: '🌃', alt: 'Evening' },
         'Night': { icon: '🌙', alt: 'Night' }
       };
       
       function getTimeIcon(timeString) {
+        // Replace 'Dinner' with 'Evening'
+        if (timeString.includes('Dinner')) {
+          timeString = timeString.replace('Dinner', 'Evening');
+        }
+        
         for (const [key, data] of Object.entries(timeIcons)) {
           if (timeString.includes(key)) {
             return `<span class="time-icon" title="${data.alt}">${data.icon}</span>`;
