@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traviti - Travel Itinerary Generator</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🧭</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/d/d9/Compass.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -30,6 +30,14 @@
       color: var(--text);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #mainView,
+    .itinerary-container {
+      flex: 1;
     }
     
     .header {
@@ -324,8 +332,8 @@
     }
     
     .day {
-      margin-bottom: 64px;
-      padding: 0 24px 48px;
+      margin-bottom: 48px;
+      padding: 0 24px 32px;
       border-bottom: 1px solid var(--border);
       max-width: 1100px;
       margin-left: auto;
@@ -351,6 +359,17 @@
       align-items: center;
       gap: 6px;
       font-weight: 500;
+    }
+    
+    .day > p a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+    }
+    
+    .day > p a:hover {
+      color: var(--accent-hover);
+      border-bottom-color: var(--accent-hover);
     }
     
     .material-icons {
@@ -409,22 +428,17 @@
     }
     
     .time-icon {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-    }
-    
-    .time-icon .material-icons {
       font-size: 20px;
     }
     
     .page-footer {
-      padding: 32px 24px 48px;
+      padding: 24px;
       text-align: center;
       color: var(--text-light);
       font-size: 0.85rem;
-      background: #f0fdf4;
+      background: white;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
     }
     
     .footer-content {
@@ -470,14 +484,77 @@
     }
     
     @media print {
+      body {
+        background: white;
+      }
+      
       .header, .hero, .actions, .page-footer {
         display: none;
       }
+      
       .itinerary-header {
-        margin: 0 0 48px;
+        padding: 16px 24px;
+        margin: 0 0 16px;
+        background: white !important;
+        color: black !important;
+        border-bottom: 2px solid black;
       }
+      
+      .itinerary-header h1 {
+        color: black !important;
+        font-size: 1.5rem;
+        margin: 0 0 4px;
+      }
+      
+      .itinerary-header p {
+        color: black !important;
+        font-size: 0.9rem;
+        opacity: 1 !important;
+      }
+      
       .day {
         page-break-inside: avoid;
+        margin-bottom: 16px;
+        padding: 0 0 16px;
+        border-bottom: 1px solid #ccc;
+      }
+      
+      .day h2 {
+        font-size: 1.1rem;
+        margin: 0 0 8px;
+      }
+      
+      .day > p {
+        font-size: 0.85rem;
+        margin: 0 0 12px;
+        color: black;
+      }
+      
+      table {
+        margin-bottom: 0;
+      }
+      
+      th, td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        color: black;
+      }
+      
+      th {
+        background: #f5f5f5 !important;
+        border-bottom: 1px solid black;
+      }
+      
+      tbody tr:nth-child(odd) td {
+        background: white !important;
+      }
+      
+      tbody tr:nth-child(even) td {
+        background: #fafafa !important;
+      }
+      
+      .material-icons {
+        color: black !important;
       }
     }
   </style>
@@ -690,28 +767,37 @@
       document.getElementById('itineraryTitle').textContent = `${destination} in ${days} Days`;
       document.getElementById('itinerarySubtitle').textContent = `${budget.charAt(0).toUpperCase() + budget.slice(1)} • ${tripType.charAt(0).toUpperCase() + tripType.slice(1)}`;
       
-      // Time of day icons
+      // Time of day icons with alt text
       const timeIcons = {
-        'Morning': '🌅',
-        'Afternoon': '☀️',
-        'Evening': '🌆',
-        'Night': '🌙'
+        'Morning': { icon: '🌅', alt: 'Morning' },
+        'Afternoon': { icon: '☀️', alt: 'Afternoon' },
+        'Evening': { icon: '🌆', alt: 'Evening' },
+        'Night': { icon: '🌙', alt: 'Night' }
       };
       
       function getTimeIcon(timeString) {
-        for (const [key, icon] of Object.entries(timeIcons)) {
+        for (const [key, data] of Object.entries(timeIcons)) {
           if (timeString.includes(key)) {
-            return `<span class="time-icon">${icon} ${timeString}</span>`;
+            return `<span class="time-icon" title="${data.alt}">${data.icon}</span>`;
           }
         }
         return timeString;
+      }
+      
+      // Generate Google Maps search URL for hotel
+      function getHotelMapLink(hotelName, destination) {
+        const query = encodeURIComponent(`${hotelName} ${destination}`);
+        return `https://www.google.com/maps/search/?api=1&query=${query}`;
       }
       
       // Generate itinerary HTML
       const content = itinerary.map(day => `
         <div class="day">
           <h2>${day.title}</h2>
-          <p><span class="material-icons">hotel</span>${day.hotel}</p>
+          <p>
+            <span class="material-icons">hotel</span>
+            <a href="${getHotelMapLink(day.hotel, destination)}" target="_blank" rel="noopener noreferrer">${day.hotel}</a>
+          </p>
           <table>
             <thead>
               <tr>
