@@ -522,6 +522,11 @@
       .form-row {
         grid-template-columns: 1fr;
       }
+      
+      th:first-child,
+      td:first-child {
+        width: 50px;
+      }
     }
     
     @media (max-width: 768px) {
@@ -666,9 +671,9 @@
               <label for="budget">Budget</label>
               <select id="budget" name="budget" required tabindex="3">
                 <option value="">Select budget</option>
-                <option value="budget">💰 Budget</option>
-                <option value="mid-range">🏨 Mid-range</option>
-                <option value="luxury">✨ Luxury</option>
+                <option value="budget">💰 Budget ($20-40/day)</option>
+                <option value="mid-range">🏨 Mid-range ($50-100/day)</option>
+                <option value="luxury">✨ Luxury ($150+/day)</option>
               </select>
             </div>
             
