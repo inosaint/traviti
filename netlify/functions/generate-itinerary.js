@@ -80,19 +80,25 @@ exports.handler = async (event, context) => {
 
 Trip: ${budgetDescription[budget]}, ${tripTypeDescription[tripType]}. ${interestsText}
 
-Return ONLY a JSON array (no markdown, no explanations):
+CRITICAL: Return ONLY a valid JSON array with NO other text, markdown, or explanations.
+
+Format (use this exact structure):
 [
   {
     "day": 1,
     "title": "Day 1 - Brief Title",
-    "hotel": "Hotel Name (3★)",
+    "hotel": "Hotel Name (4★)",
     "activities": [
-      {"when": "Morning", "what": "Activity", "notes": "Brief tip"}
+      {"when": "Morning", "what": "Activity description", "notes": "Brief practical tip"}
     ]
   }
 ]
 
-Keep it concise: 3-4 activities per day, short descriptions.`;
+Requirements:
+- Include ALL ${days} days in the array
+- 3-4 activities per day (Morning, Afternoon, Evening)
+- Keep descriptions concise
+- Return ONLY the JSON array, nothing else`;
 
     // Try to get the API key
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -115,7 +121,7 @@ Keep it concise: 3-4 activities per day, short descriptions.`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5', // Much faster than Sonnet, still great quality
-        max_tokens: 2048, // Reduced from 4096 for faster generation
+        max_tokens: 4096, // Increased for longer itineraries
         messages: [
           {
             role: 'user',
@@ -142,19 +148,46 @@ Keep it concise: 3-4 activities per day, short descriptions.`;
     const data = await response.json();
     const content = data.content[0].text;
 
-    // Extract JSON from response (Claude might wrap it in markdown despite instructions)
+    // Improved JSON extraction - handle multiple formats
     let itinerary;
     try {
+      // Try to parse directly first
+      itinerary = JSON.parse(content);
+    } catch (e) {
+      // If that fails, try to extract JSON from markdown or other wrapping
       const jsonMatch = content.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) {
-        throw new Error('Could not parse itinerary response');
+      if (jsonMatch) {
+        try {
+          itinerary = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.error('Failed to parse extracted JSON:', jsonMatch[0]);
+          return {
+            statusCode: 500,
+            body: JSON.stringify({ 
+              error: 'Failed to parse itinerary response',
+              raw: content.substring(0, 200) // Show first 200 chars for debugging
+            })
+          };
+        }
+      } else {
+        console.error('No JSON found in response:', content);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ 
+            error: 'No valid itinerary found in response',
+            raw: content.substring(0, 200)
+          })
+        };
       }
-      itinerary = JSON.parse(jsonMatch[0]);
-    } catch (parseError) {
-      console.error('Failed to parse response:', content);
+    }
+    
+    // Validate the itinerary structure
+    if (!Array.isArray(itinerary) || itinerary.length === 0) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to parse itinerary response' })
+        body: JSON.stringify({ 
+          error: 'Invalid itinerary format - expected non-empty array'
+        })
       };
     }
 

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Itinerary Generator</title>
+  <title>Traviti - Travel Itinerary Generator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🧭</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -344,11 +345,12 @@
     
     .day > p {
       margin: 0 0 24px;
-      font-size: 0.95rem;
-      color: var(--text-light);
+      font-size: 1rem;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 500;
     }
     
     .material-icons {
@@ -360,6 +362,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 24px;
+      table-layout: fixed;
     }
     
     th, td {
@@ -367,6 +370,8 @@
       text-align: left;
       font-size: 0.9rem;
       border: none;
+      word-wrap: break-word;
+      vertical-align: top;
     }
     
     th {
@@ -374,6 +379,21 @@
       background: var(--bg);
       color: var(--text);
       border-bottom: 2px solid var(--text);
+    }
+    
+    th:first-child,
+    td:first-child {
+      width: 120px;
+    }
+    
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 40%;
+    }
+    
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: auto;
     }
     
     tbody tr:nth-child(odd) td {
@@ -386,6 +406,40 @@
     
     td:first-child {
       font-weight: 500;
+    }
+    
+    .time-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+    
+    .time-icon .material-icons {
+      font-size: 20px;
+    }
+    
+    .page-footer {
+      padding: 32px 24px 48px;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      background: #f0fdf4;
+    }
+    
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    .claude-logo {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
     }
     
     .error {
@@ -416,7 +470,7 @@
     }
     
     @media print {
-      .header, .hero, .actions {
+      .header, .hero, .actions, .page-footer {
         display: none;
       }
       .itinerary-header {
@@ -484,38 +538,37 @@
               <label class="chip">
                 <input type="checkbox" name="interests" value="culture">
                 <span class="chip-icon">🏛️</span>
-                <span>Culture</span>
+                <span>History & Culture</span>
               </label>
               <label class="chip">
                 <input type="checkbox" name="interests" value="adventure">
                 <span class="chip-icon">🏔️</span>
-                <span>Adventure</span>
+                <span>Adventure Sports</span>
               </label>
               <label class="chip">
                 <input type="checkbox" name="interests" value="food">
                 <span class="chip-icon">🍜</span>
-                <span>Food</span>
+                <span>Food & Cuisine</span>
               </label>
               <label class="chip">
                 <input type="checkbox" name="interests" value="relaxation">
-                <span class="chip-icon">🌴</span>
-                <span>Relaxation</span>
+                <span class="chip-icon">🧘</span>
+                <span>Wellness & Spa</span>
               </label>
               <label class="chip">
                 <input type="checkbox" name="interests" value="nature">
                 <span class="chip-icon">🌿</span>
-                <span>Nature</span>
+                <span>Nature & Wildlife</span>
               </label>
               <label class="chip">
                 <input type="checkbox" name="interests" value="nightlife">
                 <span class="chip-icon">🎭</span>
-                <span>Nightlife</span>
+                <span>Nightlife & Entertainment</span>
               </label>
             </div>
           </div>
           
           <button type="submit" class="search-button" tabindex="5">
-            <span class="material-icons">explore</span>
             Create Itinerary
           </button>
         </form>
@@ -545,13 +598,24 @@
     <div id="itineraryContent"></div>
   </div>
   
+  <footer class="page-footer">
+    <div class="footer-content">
+      <span>Vibe coded with</span>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Claude_AI_symbol.svg" alt="Claude" class="claude-logo">
+      <span style="font-weight: 600; color: var(--text);">Claude</span>
+    </div>
+  </footer>
+  
   <div id="errorMessage" class="error"></div>
 
   <script>
-    // Chip selection
+    // Chip selection - fix to allow multiple selections
     document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
+      chip.addEventListener('click', (e) => {
+        e.preventDefault();
         chip.classList.toggle('selected');
+        const checkbox = chip.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
       });
     });
     
@@ -626,11 +690,28 @@
       document.getElementById('itineraryTitle').textContent = `${destination} in ${days} Days`;
       document.getElementById('itinerarySubtitle').textContent = `${budget.charAt(0).toUpperCase() + budget.slice(1)} • ${tripType.charAt(0).toUpperCase() + tripType.slice(1)}`;
       
+      // Time of day icons
+      const timeIcons = {
+        'Morning': '🌅',
+        'Afternoon': '☀️',
+        'Evening': '🌆',
+        'Night': '🌙'
+      };
+      
+      function getTimeIcon(timeString) {
+        for (const [key, icon] of Object.entries(timeIcons)) {
+          if (timeString.includes(key)) {
+            return `<span class="time-icon">${icon} ${timeString}</span>`;
+          }
+        }
+        return timeString;
+      }
+      
       // Generate itinerary HTML
       const content = itinerary.map(day => `
         <div class="day">
           <h2>${day.title}</h2>
-          <p><span class="material-icons">hotel</span>Hotel: ${day.hotel}</p>
+          <p><span class="material-icons">hotel</span>${day.hotel}</p>
           <table>
             <thead>
               <tr>
@@ -642,7 +723,7 @@
             <tbody>
               ${day.activities.map(activity => `
                 <tr>
-                  <td>${activity.when}</td>
+                  <td>${getTimeIcon(activity.when)}</td>
                   <td>${activity.what}</td>
                   <td>${activity.notes}</td>
                 </tr>
