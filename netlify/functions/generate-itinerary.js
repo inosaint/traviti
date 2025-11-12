@@ -75,8 +75,26 @@ exports.handler = async (event, context) => {
     const interestsText = interests && interests.length > 0
       ? `Focus on these interests: ${interests.join(', ')}.`
       : '';
+    
+    // Add interest prefix to destination if interests are selected
+    let destinationWithPrefix = sanitizedDestination;
+    if (interests && interests.length > 0) {
+      const interestPrefixes = {
+        'culture': 'Cultural',
+        'adventure': 'Adventure-focused',
+        'food': 'Culinary',
+        'relaxation': 'Wellness-focused',
+        'nature': 'Nature-oriented',
+        'nightlife': 'Vibrant'
+      };
+      const primaryInterest = interests[0];
+      const prefix = interestPrefixes[primaryInterest] || '';
+      if (prefix) {
+        destinationWithPrefix = `${prefix} ${sanitizedDestination}`;
+      }
+    }
 
-    const prompt = `Create a ${days}-day travel itinerary for ${sanitizedDestination}. 
+    const prompt = `Create a ${days}-day travel itinerary for ${destinationWithPrefix}. 
 
 Trip: ${budgetDescription[budget]}, ${tripTypeDescription[tripType]}. ${interestsText}
 
