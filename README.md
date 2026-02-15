@@ -1,7 +1,5 @@
-# AIexp
-A repository of AI experiments
+# Traviti
 
-Experiment 1: 
-[Traviti](https://traviti.netlify.app/): an AI powered itinerary generator 
+An AI-powered itinerary generator that helps you plan your perfect trip.
 
-
+**Live Demo:** [https://traviti.netlify.app/](https://traviti.netlify.app/)
